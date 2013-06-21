@@ -1,0 +1,85 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage{graphicx,amsfonts,url}
+\usepackage[utf8]{inputenc}
+\title{Rules of the Blind man's buff game}
+\author{}
+\date{2013}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{2ex}
+
+\begin{document}
+\maketitle
+
+\section*{Overview}
+
+The game is played in an environment where there is a hexagonal grid of $n$~x~$n$ cells, each potentially containing
+objects. The boundary cells contain wall, some cells contain obstacle, others can contain person. The game is
+played by one agent whose task is to localize any other person, if possible. At the start, the agent has in
+\texttt{(bs-agent6-body-grid agent-body)} the full map of walls, persons and obstacles. The
+dimensions of the grid can be discovered using the standard function \texttt{array-dimensions}. The agent does not know its position, neither the direction it is facing at the start.
+
+\section*{Permissible actions of an agent}
+
+\textbf{Moves} are processed provided that the target cell is empty:
+
+\begin{itemize}
+\item \texttt{north} -- move one cell to the north in the direction which the agent is facing.
+\item \texttt{northwest} -- move one cell to the  north-west of the direction which the agent is facing.
+\item \texttt{northeast} -- move one cell to the north-east of the direction which the agent is facing.
+\item \texttt{south} -- move one cell to the south of the direction which the agent is facing.
+\item \texttt{southwest} -- move one cell to the south-west of the direction which the agent is facing.
+\item \texttt{southeast} -- move one cell to the south-east of the direction which the agent is facing.
+\end{itemize}
+
+\textbf{Stopping the game}
+\begin{itemize}
+\item \texttt{stop} -- if  no person can be localized.
+\end{itemize}
+
+\section*{Structure of agent's percept}
+The agent's percept is a two-element list, whose first element is the \texttt{agent-body}. The second element is a
+proper agent's percept of the external world. At the start, this percept is \texttt{nil}, in every following step the
+percept reflects the previous action as follows:
+\begin{itemize}
+\item \texttt{nil} -- if the previous action was successfully performed.
+\item \texttt{bump} -- if the previous action was not successfully performed (the target space contains wall or
+obstacle).
+\end{itemize}
+
+If the agent moves to a cell containing a person, the game is stopped. The task of the agent is to find a person as
+fast as possible or to find out that it is not possible (due to obstacles). The score of the agent is calculated as a
+negative number of steps needed to finish the game. If the agent stops the game incorrectly, the score is $-1000$.
+
+\section*{How to run the game}
+\begin{enumerate}
+\item The directory in the second line of the file \texttt{run.lisp} must be changed to match the project root directory, e.g.
+\begin{verbatim}
+(cd "~/agentsim")
+\end{verbatim}
+
+\item Agent test runs can be performed using
+
+\begin{verbatim}
+(run-gui (make-bs-world6))
+\end{verbatim}
+
+\end{enumerate}
+
+\section*{\texttt{ask-user-agent} key bindings}
+You can use keys $Q$, $W$ and $E$ to move north-west, north and north-east. Keys $A$, $S$ and $D$ move the agent to the
+south-west, south and south-east. Pressing $X$ stops the game.
+
+\section*{List of useful functions}
+Following functions can be found in file \texttt{hex/utilities.lisp} and should be examined before usage:
+\begin{itemize}
+\item \texttt{xy-update}
+\item \texttt{tnorth}
+\item \texttt{tnorthwest}
+\item \texttt{tnortheast}
+\item \texttt{tsouth}
+\item \texttt{tsouthwest}
+\item \texttt{tsoutheast}
+\end{itemize}
+
+\end{document}

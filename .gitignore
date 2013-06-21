@@ -1,0 +1,9 @@
+*.swp
+*~
+*.aux
+*._aux
+*.log
+*._log
+*.synctex.gz
+*.pdf
+*.project.vim

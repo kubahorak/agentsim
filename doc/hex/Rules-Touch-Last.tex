@@ -1,0 +1,140 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage{graphicx,amsfonts,url}
+\usepackage[utf8]{inputenc}
+\title{Rules of the Last Touch game}
+\author{}
+\date{2013}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{2ex}
+
+\begin{document}
+\maketitle
+
+\section*{Overview}
+
+The game is played in an environment where there is a hexagonal grid of $n$~x~$n$ cells, each potentially containing
+objects. The boundary cells contain wall, some cells contain obstacle. The game is
+played by multiple agents of different types, which represent the persons playing the Touch-last game.
+The initial placement of agents and obstacles is chosen randomly. The first agent starts the game as the last touched.
+
+\section*{Permissible actions of an agent}
+
+\textbf{Moves} are processed provided that the target cell is empty:
+
+\begin{itemize}
+\item \texttt{north} -- move one cell to the north in the direction which the agent is facing.
+\item \texttt{northwest} -- move one cell to the  north-west of the direction which the agent is facing.
+\item \texttt{northeast} -- move one cell to the north-east of the direction which the agent is facing.
+\end{itemize}
+
+\textbf{Possible complementary move actions}
+\begin{itemize}
+\item All move actions can be specified as $n$-times repeated in the form \texttt{(action n)}, where $n$ is a positive
+integer. This action corresponds to the basic action being repeated exactly $n$-times at one step. It will be stopped
+when an obstacle is reached.
+\end{itemize}
+
+\textbf{Turns} are actions that change the direction which the agent is facing:
+\begin{itemize}
+\item \texttt{turnleft} -- turn by $60^\circ$ to the left.
+\item \texttt{turnright} -- turn by $60^\circ$ to the right.
+\end{itemize}
+
+\textbf{Touch}
+\begin{itemize}
+\item \texttt{pass} means touching the other agent and passing it the `baba'. Pass is possible only if the touching
+agent is next to another agent and is facing in its direction.
+\end{itemize}
+
+\textbf{Stopping the game}
+\begin{itemize}
+\item \texttt{stop} -- if there is an unreachable agent.
+\end{itemize}
+
+\section*{Order of agent actions}
+The first agent to perform its action is always that having the last touch. Actions of the remaining agents are
+performed in the same relative order in which they were performed last time. Table~\ref{table:example} illustrates this
+behaviour using four agents (the suffix $b$ denotes the last touched agent).
+\begin{table}[ht]
+\begin{center}
+\begin{tabular}{ | c | c | c | c | l | }
+ \hline
+First & Second & Third & Fourth & Note \\
+ \hline
+$1b$ & $2$ & $3$ & $4$ & assume $1$ touched $2$ \\
+$2b$ & $1$ & $3$ & $4$ & assume $2$ touched $4$ \\
+$4b$ & $2$ & $1$ & $3$ & assume $4$ touched $1$ \\
+$1b$ & $4$ & $2$ & $3$ & etc. \\
+ \hline
+\end{tabular}
+\end{center}
+\caption[Příklad změněného pořadí spouštění akcí agentů.]{Example of changing order of the agents action execution.}
+\label{table:example}
+\end{table}
+
+\section*{Structure of agent's percept}
+The agent's percept is a variable-length list, whose first element is the agent-body. The second element is a either
+\texttt{bump} or a list containing one element, which is the contents of the cell one step to the north of the
+direction, in which the agent is facing. The $(n+1)$-th element is a list containing $n$ elements, which correspond to
+the positions visible from the agent inside the angle $120^\circ$ in the direction where the agent is facing. Content of
+the cell is represented as follows:
+
+\begin{itemize}
+\item \texttt{nil} -- the cell is empty.
+\item \texttt{dark} -- the cell cannot be seen by the agent, because it is blocked out by an obstacle (or wall).
+\item \texttt{(baba x y)} -- the cell is occupied by the last touched agent facing in direction \texttt{(x y)}.
+\item \texttt{(agent x y)} -- the cell is occupied by an agent facing in the direction \texttt{(x y)}.
+\item \texttt{wall} -- agent is looking at a wall.
+\item \texttt{obstacle} -- agent is looking at an obstacle.
+\end{itemize}
+
+Note that direction \texttt{(x y)} is arranged. You can't add it directly to the location by e.g. function
+\texttt{xy-add} to get the . Instead, use the prepared function \texttt{xy-update}.
+
+Visibility of cells in percept is determined by the Breadth-first search algorithm run from the bottom and left to
+right. Cell added to the algorithm queue by a visible cell will also be visible, while the cell enqueued by a
+\texttt{dark} cell will be \texttt{dark}. Try the game to see how it works.
+
+\section*{Supplementary information}
+The structure representing an agent's body includes e.g. the following fields:
+\begin{itemize}
+\item \texttt{(object-loc agent-body)} -- actual location of the agent.
+\item \texttt{(tl-agent6-body-grid agent-body)} -- grid where the agent can construct its own representation of the state of
+world.
+\item \texttt{(tl-agent6-body-ma-babu? agent-body)} -- \texttt{T} if the agent has been touched last.
+\end{itemize}
+
+\section*{How to run the game}
+\begin{enumerate}
+\item The directory in the second line of the file \texttt{run.lisp} must be changed to match the project root directory, e.g.
+\begin{verbatim}
+(cd "~/agentsim")
+\end{verbatim}
+
+\item Agent test runs can then be performed using
+
+\begin{verbatim}
+(run-gui (make-tl-world6))
+\end{verbatim}
+
+\end{enumerate}
+
+\section*{\texttt{ask-user-agent} key bindings}
+You can use keys $Q$, $W$ and $E$ to move north-west, north and north-east. Keys $A$ and $D$ turn
+the agent to the left and to the right. Pressing $P$ causes the agent to \texttt{pass}, $X$ stops the game.
+
+\section*{List of useful functions}
+Following functions can be found in file \texttt{hex/utilities.lisp} and should be examined before usage:
+\begin{itemize}
+\item \texttt{update-grid}
+\item \texttt{xy-update}
+\item \texttt{tnorth}
+\item \texttt{tnorthwest}
+\item \texttt{tnortheast}
+\item \texttt{tsouth}
+\item \texttt{tsouthwest}
+\item \texttt{tsoutheast}
+\end{itemize}
+
+\end{document}

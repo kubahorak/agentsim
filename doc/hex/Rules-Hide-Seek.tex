@@ -1,0 +1,115 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage{graphicx,amsfonts,url}
+\usepackage[utf8]{inputenc}
+\title{Rules of the Hide\&Seek game}
+\author{}
+\date{2013}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{2ex}
+
+\begin{document}
+\maketitle
+
+\section*{Overview}
+
+The game is played in an environment where there is a hexagonal grid of $n$ x $n$ cells. All boundary cells
+contain a wall. Some internal cells contain bush and in some bushes there is a hidden person; other cells can contain an
+obstacle. The game is played by one agent whose task is to find as fast as possible all hidden persons (or all hidden
+persons that can be found). Initial position of  the agent is \texttt{(1 1)}, locations of the remaining objects in the
+grid are chosen randomly.
+
+\section*{Permissible actions of an agent}
+
+\textbf{Moves} are processed provided that the target cell is empty:
+
+\begin{itemize}
+\item \texttt{north} -- move one cell to the north in the direction which the agent is facing.
+\item \texttt{northwest} -- move one cell to the  north-west of the direction which the agent is facing.
+\item \texttt{northeast} -- move one cell to the north-east of the direction which the agent is facing.
+\end{itemize}
+
+\textbf{Possible complementary move actions}
+\begin{itemize}
+\item All move actions can be specified as $n$-times repeated in the form \texttt{(action n)}, where $n$ is a positive
+integer. This action corresponds to the basic action being repeated exactly $n$-times at one step. It will be stopped
+when an obstacle is reached.
+\end{itemize}
+
+\textbf{Turns} are actions that change the direction which the agent is facing:
+\begin{itemize}
+\item \texttt{turnleft} -- turn by $60^\circ$ to the left.
+\item \texttt{turnright} -- turn by $60^\circ$ to the right.
+\end{itemize}
+
+\textbf{Finding}
+\begin{itemize}
+\item \texttt{pyky} -- finding a person hidden in a bush is possible only provided that:
+\begin{itemize}
+\item The bush can be seen by the agent.
+\item The bush is facing towards the agent.
+\item The agent is facing towards the bush.
+\end{itemize}
+\end{itemize}
+
+\textbf{Stopping the game}
+\begin{itemize}
+\item \texttt{stop} -- if no person can be localized.
+\end{itemize}
+
+\section*{Structure of agent's percept}
+The agent's percept is a variable-length list, whose first element is the agent-body. The second element is a list
+containing one element, which is the contents of the cell one step to the north of the direction, in which the agent is
+facing. The $(n+1)$-th element is a list containing $n$ elements, which correspond to the positions visible from
+the agent inside the angle $120^\circ$ in the direction where the agent is facing. Content of the cell is represented as follows:
+
+\begin{itemize}
+\item \texttt{nil} -- the cell is empty.
+\item \texttt{dark} -- the cell cannot be seen by the agent, because it is blocked out by an obstacle (wall or bush).
+\item \texttt{person} -- agent is looking at a bush with a hidden person. The bush is facing towards the agent.
+\item \texttt{bush} -- agent is looking towards a bush in which nobody is hidden or which is facing in some other direction.
+\item \texttt{wall} -- agent is looking at a wall.
+\end{itemize}
+
+Visibility of cells in percept is determined by the Breadth-first search algorithm run from the bottom and left to
+right. Cell added to the algorithm queue by a visible cell will also be visible, while the cell enqueued by a
+\texttt{dark} cell will be \texttt{dark}. Try the game to see how it works.
+
+\section*{State of the world}
+The agent creates its representation of the state of the external world in the field \texttt{(hs-agent6-body-grid
+agent-body)}.
+
+\section*{How to run the game}
+\begin{enumerate}
+\item The directory in the second line of the file \texttt{run.lisp} must be changed to match the project root directory, e.g.
+\begin{verbatim}
+(cd "~/agentsim")
+\end{verbatim}
+
+\item Agent test runs can then be performed using
+
+\begin{verbatim}
+(run-gui (make-hs-world6))
+\end{verbatim}
+
+\end{enumerate}
+
+\section*{\texttt{ask-user-agent} key bindings}
+You can use keys $Q$, $W$ and $E$ to move north-west, north and north-east. Keys $A$ and $D$ turn
+the agent to the left and to the right. Pressing $P$ causes the agent to \texttt{pyky}, $X$ stops the game.
+
+\section*{List of useful functions}
+Following functions can be found in file \texttt{hex/utilities.lisp} and should be examined before usage:
+\begin{itemize}
+\item \texttt{count-persons}
+\item \texttt{update-grid}
+\item \texttt{xy-update}
+\item \texttt{tnorth}
+\item \texttt{tnorthwest}
+\item \texttt{tnortheast}
+\item \texttt{tsouth}
+\item \texttt{tsouthwest}
+\item \texttt{tsoutheast}
+\end{itemize}
+
+\end{document}
