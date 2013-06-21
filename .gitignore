@@ -5,5 +5,4 @@
 *.log
 *._log
 *.synctex.gz
-*.pdf
 *.project.vim

@@ -8,8 +8,8 @@ Návod k použití se nachází v souboru doc/hex/Usage.pdf
 Obsah
 -----
 
-    doc
-    doc/hex             ...  popis nových her s šestiúhelnou mřížkou
+    doc                 ...  dokumentace
+    doc/hex             ...  pravidla her s šestiúhelnou mřížkou
     doc/hex/Usage.pdf   ...  návod k použití ve formátu PDF
     run.lisp            ...  zaváděcí Lisp soubor
     loadfiles.lisp      ...  soubory, které se načítají při spuštění
@@ -36,7 +36,7 @@ Usage manual can be found in file doc/hex/Usage.pdf
 Contents
 --------
 
-    doc
+    doc                 ...  documentation
     doc/hex             ...  rules of the new games with a hexagonal grid
     doc/hex/Usage.pdf   ...  usage manual in PDF
     run.lisp            ...  initialization Lisp file
